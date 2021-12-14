@@ -1,0 +1,5 @@
+target
+__pycache__
+docs/apidocs
+.idea
+hs_err_*.log
