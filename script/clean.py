@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
-import common, os, shutil, sys
+import buildy, common, os, sys
 
 def main():
   os.chdir(common.basedir)
-  shutil.rmtree('target', ignore_errors = True)
+  buildy.rmdir("target")
+  buildy.rmdir("docs/apidocs")
   return 0
 
 if __name__ == '__main__':
