@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-import argparse, functools, glob, itertools, os, pathlib, platform, shutil, subprocess, time, urllib.request
+import argparse, base64, functools, glob, itertools, json, os, pathlib, platform, re, shutil, subprocess, tempfile, time, urllib.request, zipfile
 from typing import List, Tuple
 
 def get_arg(name):
@@ -10,7 +10,8 @@ def get_arg(name):
 
 arch   = get_arg("arch") or {'AMD64': 'x64', 'x86_64': 'x64', 'arm64': 'arm64'}[platform.machine()]
 system = get_arg("system") or {'Darwin': 'macos', 'Linux': 'linux', 'Windows': 'windows'}[platform.system()]
-classpath_separator = ';' if system == 'windows' else ':'
+classpath_separator = ';' if platform.system() == 'Windows' else ':'
+mvn = "mvn.cmd" if platform.system() == "Windows" else "mvn"
 
 def classpath_join(entries):
   return classpath_separator.join(entries)
@@ -129,3 +130,96 @@ def javadoc(classpath: str, dirs: List[str], target: str):
       "-quiet",
       "-Xdoclint:all,-missing",
       *sources])
+
+def deploy(jar,
+           tempdir = tempfile.gettempdir(),
+           classifier = None,
+           ossrh_username = os.getenv('OSSRH_USERNAME'),
+           ossrh_password = os.getenv('OSSRH_PASSWORD'),
+           repo="https://s01.oss.sonatype.org/service/local/staging"):
+  makedirs(tempdir)
+  settings = tempdir + "/settings.xml"
+  with open(settings, 'w') as f:
+    f.write("""
+      <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          <servers>
+              <server>
+                  <id>ossrh</id>
+                  <username>${ossrh.username}</username>
+                  <password>${ossrh.password}</password>
+              </server>
+          </servers>
+      </settings>
+    """)
+
+  mvn_settings = [
+    '--settings', settings,
+    '-Dossrh.username=' + ossrh_username,
+    '-Dossrh.password=' + ossrh_password,
+    '-Durl=' + repo + "/deploy/maven2/",
+    '-DrepositoryId=ossrh'
+  ]
+
+  with zipfile.ZipFile(jar, 'r') as f:
+    pom = [path for path in f.namelist() if re.fullmatch(r"META-INF/maven/.*/pom\.xml", path)][0]
+    f.extract(pom, tempdir)
+
+  classifier = classifier or (re.fullmatch(r".*-\d+\.\d+\.\d+(?:-SNAPSHOT)?(?:-([a-z0-9\-]+))?\.jar", os.path.basename(jar))[1])
+
+  print(f'Deploying {jar}', classifier, pom)
+  subprocess.check_call(
+    [mvn, 'gpg:sign-and-deploy-file'] + \
+    mvn_settings + \
+    [f'-DpomFile={tempdir}/{pom}',
+     f'-Dfile={jar}']
+    + ([f"-Dclassifier={classifier}"] if classifier else []))
+
+def release(ossrh_username = os.getenv('OSSRH_USERNAME'),
+            ossrh_password = os.getenv('OSSRH_PASSWORD'),
+            repo="https://s01.oss.sonatype.org/service/local/staging"):
+  headers = {
+    'Accept': 'application/json',
+    'Authorization': 'Basic ' + base64.b64encode((ossrh_username + ":" + ossrh_password).encode('utf-8')).decode('utf-8'),
+    'Content-Type': 'application/json',
+  }
+
+  def fetch(path, data = None):
+    req = urllib.request.Request(repo + path,
+                                 headers=headers,
+                                 data = json.dumps(data).encode('utf-8') if data else None)
+    resp = urllib.request.urlopen(req).read().decode('utf-8')
+    print(' ', path, "->", resp)
+    return json.loads(resp) if resp else None
+
+  print('Finding staging repo')
+  resp = fetch('/profile_repositories')
+  repo_id = resp['data'][0]["repositoryId"]
+  
+  print('Closing repo', repo_id)
+  resp = fetch('/bulk/close', data = {"data": {"description": "", "stagedRepositoryIds": [repo_id]}})
+
+  while True:
+    print('Checking repo', repo_id, 'status')
+    resp = fetch('/repository/' + repo_id + '/activity')
+    close_events = [e for e in resp if e['name'] == 'close']
+    close_events = close_events[0]['events'] if close_events else []
+    fail_events = [e for e in close_events if e['name'] == 'ruleFailed']
+    if fail_events:
+      print(fail_events)
+      return 1
+
+    if close_events and close_events[-1]['name'] == 'repositoryClosed':
+      break
+
+    time.sleep(0.5)
+
+  print('Releasing staging repo', repo_id)
+  resp = fetch('/bulk/promote', data = {"data": {
+              "autoDropAfterRelease": True,
+              "description": "",
+              "stagedRepositoryIds":[repo_id]
+        }})
+  print('Success! Just released', repo_id)

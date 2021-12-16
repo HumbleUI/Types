@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
-import buildy, functools, os, pathlib, platform, subprocess, urllib.request
+import build_utils, functools, os, pathlib, platform, subprocess, urllib.request
 
 basedir = os.path.abspath(os.path.dirname(__file__) + '/..')
 
-version = buildy.get_arg("version") or buildy.parse_ref(buildy.get_arg("ref")) or "0.0.0-SNAPSHOT"
+version = build_utils.get_arg("version") or build_utils.parse_ref(build_utils.get_arg("ref")) or "0.0.0-SNAPSHOT"
 
 @functools.cache
 def deps():
-  return [buildy.lombok(), buildy.fetch_maven('org.jetbrains', 'annotations', '23.0.0')]
+  return [build_utils.lombok(), build_utils.fetch_maven('org.jetbrains', 'annotations', '23.0.0')]

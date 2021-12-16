@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
-import buildy, common, glob, os, sys
+import build_utils, common, glob, os, sys
 
 def main():
   os.chdir(common.basedir)
-  buildy.javac(common.deps(), buildy.files('java/**/*.java'), 'target/classes')
+  build_utils.javac(common.deps(), build_utils.files('java/**/*.java'), 'target/classes')
   return 0
 
 if __name__ == '__main__':
