@@ -189,6 +189,7 @@ def deploy(jar,
     [f'-DpomFile={tempdir}/{pom}',
      f'-Dfile={jar}']
     + ([f"-Dclassifier={classifier}"] if classifier else []))
+  return 0
 
 def release(ossrh_username = os.getenv('OSSRH_USERNAME'),
             ossrh_password = os.getenv('OSSRH_PASSWORD'),
@@ -209,6 +210,10 @@ def release(ossrh_username = os.getenv('OSSRH_USERNAME'),
 
   print('Finding staging repo')
   resp = fetch('/profile_repositories')
+  if len(resp['data']) != 1:
+    print("Too many open repositories:", [repo['repositoryId'] for repo in resp['data']])
+    return 1
+
   repo_id = resp['data'][0]["repositoryId"]
   
   print('Closing repo', repo_id)
@@ -236,3 +241,4 @@ def release(ossrh_username = os.getenv('OSSRH_USERNAME'),
               "stagedRepositoryIds":[repo_id]
         }})
   print('Success! Just released', repo_id)
+  return 0

@@ -8,9 +8,7 @@ def main() -> int:
   for jar in jars:
     build_utils.deploy(jar, tempdir = "target/deploy")
 
-  build_utils.release()  
-
-  return 0
+  return build_utils.release()
 
 if __name__ == "__main__":
   sys.exit(main())
