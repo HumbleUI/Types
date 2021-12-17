@@ -60,6 +60,7 @@ def has_newer(sources, targets):
       mtime = min(mtime, os.path.getmtime(target))
     else:
       mtime = 0
+      break
   for path in sources:
     if os.path.getmtime(path) > mtime:
       return True
@@ -79,7 +80,7 @@ def fetch_maven(group, name, version, classifier=None, repo='https://repo1.maven
   fetch(repo + '/' + path, file)
   return file
 
-def javac(classpath, sources, target, release='11', opts=[]):
+def javac(sources, target, classpath = [], modulepath = [], add_modules = [], release = '11', opts=[]):
   makedirs(target)
   classes = {path.stem: path.stat().st_mtime for path in pathlib.Path(target).rglob('*.class') if '$' not in path.stem}
   newer = lambda path: path.stem not in classes or path.stat().st_mtime > classes.get(path.stem)
@@ -91,7 +92,9 @@ def javac(classpath, sources, target, release='11', opts=[]):
       '-encoding', 'UTF8',
       *opts,
       '--release', release,
-      '--class-path', classpath_join(classpath + [target]),
+      *(['--class-path', classpath_join(classpath + [target])] if classpath else []),
+      *(['--module-path', classpath_join(modulepath)] if modulepath else []),
+      *(['--add-modules', ','.join(add_modules)] if add_modules else []),
       '-d', target,
       *new_sources])
 
@@ -109,24 +112,28 @@ def jar(target: str, *content: List[Tuple[str, str]]) -> str:
 def lombok():
   return fetch_maven('org.projectlombok', 'lombok', '1.18.22')
 
-def delombok(classpath: str, dirs: List[str], target: str):
+def delombok(dirs: List[str], target: str, classpath: List[str] = [], modulepath: List[str] = []):
   sources = files(*[dir + "/**/*.java" for dir in dirs])
   if has_newer(sources, files(target + "/**")):
     print("Delomboking", *dirs, "to", target)
     subprocess.check_call(["java",
+      "-Dfile.encoding=UTF8",
       "-jar", lombok(),
       "delombok",
       *dirs,
-      "--classpath", classpath_join(classpath),
-      "-d", target
+      '--encoding', 'UTF-8',
+      *(["--classpath", classpath_join(classpath)] if classpath else []),
+      *(["--module-path", classpath_join(modulepath)] if modulepath else []),
+      "--target", target
     ])
 
-def javadoc(classpath: str, dirs: List[str], target: str):
+def javadoc(dirs: List[str], target: str, classpath: List[str] = [], modulepath: List[str] = []):
   sources = files(*[dir + "/**/*.java" for dir in dirs])
   if has_newer(sources, files(target + "/**")):
     print("Generating JavaDoc", *dirs, "to", target)
     subprocess.check_call(["javadoc",
-      "--class-path", classpath_join(classpath),
+      *(["--class-path", classpath_join(classpath)] if classpath else []),
+      *(["--module-path", classpath_join(modulepath)] if modulepath else []),
       "-d", target,
       "-quiet",
       "-Xdoclint:all,-missing",

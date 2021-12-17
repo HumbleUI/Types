@@ -21,10 +21,10 @@ def main() -> Tuple[str, str, str]:
   
   jar = build_utils.jar(f"target/types-{common.version}.jar", ("target/classes", "."), ("target/maven", "META-INF"))
 
-  build_utils.delombok(common.deps(), ["java"], "target/delomboked/io/github/humbleui/types")
+  build_utils.delombok(["java"], "target/delomboked/io/github/humbleui/types", modulepath=common.deps())
   sources = build_utils.jar(f"target/types-{common.version}-sources.jar", ("target/delomboked", "."), ("target/maven", "META-INF"))
 
-  build_utils.javadoc(common.deps(), ["target/delomboked"], "target/apidocs")
+  build_utils.javadoc(["target/delomboked"], "target/apidocs", modulepath=common.deps())
   javadoc = build_utils.jar(f"target/types-{common.version}-javadoc.jar", ("target/apidocs", "."), ("target/maven", "META-INF"))
 
   return (jar, sources, javadoc)

@@ -9,5 +9,5 @@ version = build_utils.get_arg("version") or build_utils.parse_ref(build_utils.ge
 def deps():
   return [
     build_utils.lombok(),
-    build_utils.fetch_maven('org.jetbrains', 'annotations', '23.0.0')
+    build_utils.fetch_maven('org.jetbrains', 'annotations', '20.1.0')
   ]
