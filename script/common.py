@@ -3,9 +3,9 @@ import build_utils, functools, os, pathlib, platform, subprocess, urllib.request
 
 basedir = os.path.abspath(os.path.dirname(__file__) + '/..')
 
-version = build_utils.get_arg("version") or build_utils.parse_ref(build_utils.get_arg("ref")) or "0.0.0-SNAPSHOT"
+version = build_utils.get_arg("version") or build_utils.parse_ref() or build_utils.parse_sha() or "0.0.0-SNAPSHOT"
 
-@functools.cache
+@functools.lru_cache(maxsize=1)
 def deps():
   return [
     build_utils.lombok(),

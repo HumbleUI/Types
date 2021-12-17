@@ -16,9 +16,15 @@ mvn = "mvn.cmd" if platform.system() == "Windows" else "mvn"
 def classpath_join(entries):
   return classpath_separator.join(entries)
 
-def parse_ref(ref: str) -> str:
-  if ref and (match := re.fullmatch("refs/[^/]+/([^/]+)", ref)):
-    return match.group(1)
+def parse_ref() -> str:
+  ref = get_arg("ref") or os.getenv('GITHUB_REF')
+  if ref and ref.startswith('refs/tags/'):
+    return ref[len('refs/tags/'):]
+
+def parse_sha() -> str:
+  sha = get_arg("sha") or os.getenv('GITHUB_SHA')
+  if sha:
+    return sha[:10]
 
 def makedirs(path):
   os.makedirs(path, exist_ok=True)
@@ -107,7 +113,7 @@ def jar(target: str, *content: List[Tuple[str, str]]) -> str:
       "--file", target] + sum([["-C", dir, file] for (dir, file) in content], start=[]))
   return target
 
-@functools.cache
+@functools.lru_cache(maxsize=1)
 def lombok():
   return fetch_maven('org.projectlombok', 'lombok', '1.18.22')
 
