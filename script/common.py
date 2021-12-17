@@ -7,4 +7,7 @@ version = build_utils.get_arg("version") or build_utils.parse_ref(build_utils.ge
 
 @functools.cache
 def deps():
-  return [build_utils.lombok(), build_utils.fetch_maven('org.jetbrains', 'annotations', '23.0.0')]
+  return [
+    build_utils.lombok(),
+    build_utils.fetch_maven('org.jetbrains', 'annotations', '23.0.0')
+  ]

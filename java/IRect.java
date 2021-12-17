@@ -1,13 +1,12 @@
-package io.github.humbleui.core;
+package io.github.humbleui.types;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.*;
 
 @Getter
 @EqualsAndHashCode
 @ToString
+@With
 public class IRect {
     public final int _left;
     public final int _top;
@@ -28,6 +27,16 @@ public class IRect {
 
     public int getHeight() {
         return _bottom - _top;
+    }
+
+    @NotNull @Contract("_ -> new")
+    public IRect withWidth(int width) {
+        return new IRect(_left, _top, _left + width, _bottom);
+    }
+
+    @NotNull @Contract("_ -> new")
+    public IRect withHeight(int height) {
+        return new IRect(_left, _top, _right, _top + height);
     }
 
     @NotNull @Contract("_, _, _, _ -> new")

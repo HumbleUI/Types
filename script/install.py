@@ -5,9 +5,9 @@ def main() -> int:
   jars = package.main()
   os.chdir(common.basedir)
 
-  repo = os.path.expanduser(f"~/.m2/repository/io/github/humbleui/core/core/{common.version}")
-  build_utils.copy_newer("target/maven/META-INF/maven/io.github.humbleui.core/core/pom.xml",
-                    f"{repo}/core-{common.version}.pom")  
+  repo = os.path.expanduser(f"~/.m2/repository/io/github/humbleui/types/{common.version}")
+  build_utils.copy_newer("target/maven/META-INF/maven/io.github.humbleui/types/pom.xml",
+                         f"{repo}/types-{common.version}.pom")
   for jar in jars:
     if build_utils.copy_newer(jar, repo + "/" + os.path.basename(jar)):
       print(f"Installed {os.path.basename(jar)}")

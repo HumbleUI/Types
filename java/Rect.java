@@ -1,13 +1,12 @@
-package io.github.humbleui.core;
+package io.github.humbleui.types;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.*;
 
 @Getter
 @EqualsAndHashCode
 @ToString
+@With
 public class Rect {
     public final float _left;
     public final float _top;
@@ -28,6 +27,16 @@ public class Rect {
 
     public float getHeight() {
         return _bottom - _top;
+    }
+
+    @NotNull @Contract("_ -> new")
+    public Rect withWidth(float width) {
+        return new Rect(_left, _top, _left + width, _bottom);
+    }
+
+    @NotNull @Contract("_ -> new")
+    public Rect withHeight(float height) {
+        return new Rect(_left, _top, _right, _top + height);
     }
 
     @NotNull @Contract("_, _, _, _ -> new")
@@ -95,6 +104,26 @@ public class Rect {
     @NotNull @Contract("-> new")
     public IRect toIRect() {
         return new IRect((int) _left, (int) _top, (int) _right, (int) _bottom);
+    }
+
+    @NotNull @Contract("_ -> new")
+    public RRect withRadii(float radius) {
+        return RRect.makeLTRB(_left, _top, _right, _bottom, radius);
+    }
+
+    @NotNull @Contract("_, _ -> new")
+    public RRect withRadii(float xRad, float yRad) {
+        return RRect.makeLTRB(_left, _top, _right, _bottom, xRad, yRad);
+    }
+
+    @NotNull @Contract("_ -> new")
+    public RRect withRadii(float tlRad, float trRad, float brRad, float blRad) {
+        return RRect.makeLTRB(_left, _top, _right, _bottom, tlRad, trRad, brRad, blRad);
+    }
+
+    @NotNull @Contract("_ -> new")
+    public RRect withRadii(float[] radii) {
+        return RRect.makeComplexLTRB(_left, _top, _right, _bottom, radii);
     }
 
     @NotNull

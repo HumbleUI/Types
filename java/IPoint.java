@@ -1,17 +1,15 @@
-package io.github.humbleui.core;
+package io.github.humbleui.types;
 
-import lombok.Data;
+import lombok.*;
 import org.jetbrains.annotations.*;
 
 @Data
+@With
 public class IPoint {
     public static final IPoint ZERO = new IPoint(0, 0);
 
-    @ApiStatus.Internal
-    public final int _x;
-
-    @ApiStatus.Internal
-    public final int _y;
+    @ApiStatus.Internal public final int _x;
+    @ApiStatus.Internal public final int _y;
 
     @NotNull
     public IPoint offset(int dx, int dy) {

@@ -8,24 +8,24 @@ def main() -> Tuple[str, str, str]:
   os.chdir(common.basedir)
 
   build_utils.copy_replace(
-    "deploy/META-INF/maven/io.github.humbleui.core/core/pom.xml",
-    "target/maven/META-INF/maven/io.github.humbleui.core/core/pom.xml",
+    "deploy/META-INF/maven/io.github.humbleui/types/pom.xml",
+    "target/maven/META-INF/maven/io.github.humbleui/types/pom.xml",
     {"${version}": common.version}
   )
 
   build_utils.copy_replace(
-    "deploy/META-INF/maven/io.github.humbleui.core/core/pom.properties",
-    "target/maven/META-INF/maven/io.github.humbleui.core/core/pom.properties",
+    "deploy/META-INF/maven/io.github.humbleui/types/pom.properties",
+    "target/maven/META-INF/maven/io.github.humbleui/types/pom.properties",
     {"${version}": common.version}
   )
   
-  jar = build_utils.jar(f"target/core-{common.version}.jar", ("target/classes", "."), ("target/maven", "META-INF"))
+  jar = build_utils.jar(f"target/types-{common.version}.jar", ("target/classes", "."), ("target/maven", "META-INF"))
 
-  build_utils.delombok(common.deps(), ["java"], "target/delomboked/io/github/humbleui/core")
-  sources = build_utils.jar(f"target/core-{common.version}-sources.jar", ("target/delomboked", "."), ("target/maven", "META-INF"))
+  build_utils.delombok(common.deps(), ["java"], "target/delomboked/io/github/humbleui/types")
+  sources = build_utils.jar(f"target/types-{common.version}-sources.jar", ("target/delomboked", "."), ("target/maven", "META-INF"))
 
-  build_utils.javadoc(common.deps(), ["target/delomboked"], "docs/apidocs")
-  javadoc = build_utils.jar(f"target/core-{common.version}-javadoc.jar", ("docs/apidocs", "."), ("target/maven", "META-INF"))
+  build_utils.javadoc(common.deps(), ["target/delomboked"], "target/apidocs")
+  javadoc = build_utils.jar(f"target/types-{common.version}-javadoc.jar", ("target/apidocs", "."), ("target/maven", "META-INF"))
 
   return (jar, sources, javadoc)
 

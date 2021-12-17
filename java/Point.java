@@ -1,17 +1,15 @@
-package io.github.humbleui.core;
+package io.github.humbleui.types;
 
-import lombok.Data;
+import lombok.*;
 import org.jetbrains.annotations.*;
 
 @Data
+@With
 public class Point {
     public static final Point ZERO = new Point(0, 0);
 
-    @ApiStatus.Internal
-    public final float _x;
-    
-    @ApiStatus.Internal
-    public final float _y;
+    @ApiStatus.Internal public final float _x; 
+    @ApiStatus.Internal public final float _y;
 
     @Contract("null -> null; !null -> new")
     public static @Nullable float[] flattenArray(@Nullable Point[] pts) {

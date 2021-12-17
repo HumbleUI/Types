@@ -1,4 +1,4 @@
-package io.github.humbleui.core;
+package io.github.humbleui.types;
 
 import java.util.*;
 import lombok.*;

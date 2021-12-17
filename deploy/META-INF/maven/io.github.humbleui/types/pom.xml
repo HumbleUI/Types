@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.humbleui.core</groupId>
-    <artifactId>core</artifactId>
+    <groupId>io.github.humbleui</groupId>
+    <artifactId>types</artifactId>
     <version>${version}</version>
     <packaging>jar</packaging>
 
-    <name>io.github.humbleui.core:core</name>
-    <description>Core classes for Humble UI</description>
-    <url>https://github.com/humbleui/core</url>
+    <name>io.github.humbleui:types</name>
+    <description>Core types for Humble UI</description>
+    <url>https://github.com/humbleui/types</url>
     
     <licenses>
       <license>
@@ -27,9 +27,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/humbleui/core.git</connection>
-        <developerConnection>scm:git:ssh://github.com/humbleui/core.git</developerConnection>
-        <url>http://github.com/humbleui/core/tree/master</url>
+        <connection>scm:git:git://github.com/humbleui/types.git</connection>
+        <developerConnection>scm:git:ssh://github.com/humbleui/types.git</developerConnection>
+        <url>http://github.com/humbleui/types/tree/master</url>
     </scm>
 
     <properties>

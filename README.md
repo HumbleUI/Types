@@ -1,12 +1,12 @@
-# Core classes for Skija, JWM and HumbleUI
+# Core types for Skija, JWM and HumbleUI
 
 ## Dependency
 
 Key        | Value
 -----------|-----------------------
-groupId    | io.github.humbleui.core
-artifactId | core
-version    | ![version](https://img.shields.io/maven-central/v/io.github.humbleui.core/core)
+groupId    | io.github.humbleui
+artifactId | types
+version    | ![version](https://img.shields.io/maven-central/v/io.github.humbleui/types)
 
 ## Building from source
 
@@ -20,10 +20,10 @@ Build:
 ./script/build.py
 ```
 
-Publish locally (as `0.0.0-SNAPSHOT`):
+Publish locally:
 
 ```
-./script/publish_local.py
+./script/install.py --version 0.1.0
 ```
 
 # Contributors

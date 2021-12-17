@@ -1,9 +1,10 @@
-package io.github.humbleui.core;
+package io.github.humbleui.types;
 
-import lombok.Data;
+import lombok.*;
 import org.jetbrains.annotations.*;
 
 @Data
+@With
 public class IRange {
     @ApiStatus.Internal
     public final int _start;
