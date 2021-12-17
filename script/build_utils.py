@@ -105,7 +105,6 @@ def jar(target: str, *content: List[Tuple[str, str]]) -> str:
     subprocess.check_call(["jar",
       "--create",
       "--file", target] + sum([["-C", dir, file] for (dir, file) in content], start=[]))
-    return target
   return target
 
 @functools.cache
