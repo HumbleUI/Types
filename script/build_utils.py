@@ -222,7 +222,7 @@ def release(ossrh_username = os.getenv('OSSRH_USERNAME'),
   while True:
     print('Checking repo', repo_id, 'status')
     resp = fetch('/repository/' + repo_id + '/activity')
-    close_events = [e for e in resp if e['name'] == 'close']
+    close_events = [e for e in resp if e['name'] == 'close' and 'stopped' in e and 'events' in e]
     close_events = close_events[0]['events'] if close_events else []
     fail_events = [e for e in close_events if e['name'] == 'ruleFailed']
     if fail_events:
