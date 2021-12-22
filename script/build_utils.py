@@ -6,8 +6,9 @@ def get_arg(name):
   parser = argparse.ArgumentParser()
   parser.add_argument(f'--{name}')
   (args, _) = parser.parse_known_args()
-  return vars(args).get(name)
+  return vars(args).get(name.replace("-", "_"))
 
+execdir = os.getcwd()
 arch   = get_arg("arch") or {'AMD64': 'x64', 'x86_64': 'x64', 'arm64': 'arm64'}[platform.machine()]
 system = get_arg("system") or {'Darwin': 'macos', 'Linux': 'linux', 'Windows': 'windows'}[platform.system()]
 classpath_separator = ';' if platform.system() == 'Windows' else ':'
@@ -32,8 +33,11 @@ def makedirs(path):
 def rmdir(path):
   shutil.rmtree(path, ignore_errors=True)
 
+def cat(iterables):
+  return list(itertools.chain(*iterables))
+
 def files(*patterns):
-  return sum([glob.glob(pattern, recursive=True) for pattern in patterns], start=[])
+  return cat([glob.glob(pattern, recursive=True) for pattern in patterns])
 
 def slurp(path):
   if os.path.exists(path):
@@ -110,7 +114,8 @@ def jar(target: str, *content: List[Tuple[str, str]]) -> str:
     makedirs(os.path.dirname(target))
     subprocess.check_call(["jar",
       "--create",
-      "--file", target] + sum([["-C", dir, file] for (dir, file) in content], start=[]))
+      "--file", target,
+      *cat([["-C", dir, file] for (dir, file) in content])])
   return target
 
 @functools.lru_cache(maxsize=1)

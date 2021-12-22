@@ -71,6 +71,65 @@ public class RRect extends Rect {
     }
 
     @Override @NotNull
+    public RRect scale(float scale) {
+        return scale(scale, scale);
+    }
+
+    @Override @NotNull
+    public RRect scale(float sx, float sy) {
+        if (sx == 1 && sy == 1)
+            return this;
+        if (sx == sy) {
+            switch (_radii.length) {
+            case 1:
+                return new RRect(_left * sx, _top * sx, _right * sx, _bottom * sx, new float[] { _radii[0] * sx });
+            case 2:
+                return new RRect(_left * sx, _top * sx, _right * sx, _bottom * sx, new float[] { _radii[0] * sx, _radii[1] * sx });
+            case 4:
+                return new RRect(_left * sx, _top * sx, _right * sx, _bottom * sx,
+                                 new float[] { _radii[0] * sx, _radii[1] * sx, _radii[2] * sx, _radii[3] * sx });
+            case 8:
+                return new RRect(_left * sx, _top * sx, _right * sx, _bottom * sx,
+                                 new float[] { _radii[0] * sx, _radii[1] * sx,
+                                               _radii[2] * sx, _radii[3] * sx,
+                                               _radii[4] * sx, _radii[5] * sx,
+                                               _radii[6] * sx, _radii[7] * sx });
+            }
+        } else {
+            switch (_radii.length) {
+            case 1:
+                return new RRect(_left * sx, _top * sy, _right * sx, _bottom * sy, new float[] { _radii[0] * sx, _radii[0] * sy });
+            case 2:
+                return new RRect(_left * sx, _top * sy, _right * sx, _bottom * sy, new float[] { _radii[0] * sx, _radii[1] * sy });
+            case 4:
+                return new RRect(_left * sx, _top * sy, _right * sx, _bottom * sy,
+                                 new float[] { _radii[0] * sx, _radii[0] * sy,
+                                               _radii[1] * sx, _radii[1] * sy,
+                                               _radii[2] * sx, _radii[2] * sy,
+                                               _radii[3] * sx, _radii[3] * sy });
+            case 8:
+                return new RRect(_left * sx, _top * sy, _right * sx, _bottom * sy,
+                                 new float[] { _radii[0] * sx, _radii[1] * sy,
+                                               _radii[2] * sx, _radii[3] * sy,
+                                               _radii[4] * sx, _radii[5] * sy,
+                                               _radii[6] * sx, _radii[7] * sy });
+            }
+        }
+        throw new RuntimeException("Unreachable, _radii=" + Arrays.toString(_radii));
+    }
+
+    @Override @NotNull
+    public RRect offset(float dx, float dy) {
+        return dx == 0 && dy == 0 ? this : new RRect(_left + dx, _top + dy, _right + dx, _bottom + dy, _radii);
+    }
+
+    @Override @NotNull
+    public RRect offset(@NotNull Point vec) {
+        assert vec != null : "Rect::offset expected vec != null";
+        return offset(vec._x, vec._y);
+    }
+
+    @Override @NotNull
     public Rect inflate(float spread) {
         boolean becomesRect = true;
         for (int i = 0; i < _radii.length; ++i) {

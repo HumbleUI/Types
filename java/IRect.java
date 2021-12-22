@@ -75,8 +75,18 @@ public class IRect {
     }
 
     @NotNull
+    public IRect scale(int scale) {
+        return scale(scale, scale);
+    }
+
+    @NotNull
+    public IRect scale(int sx, int sy) {
+        return sx == 1 && sy == 1 ? this : new IRect(_left * sx, _top * sy, _right * sx, _bottom * sy);
+    }
+
+    @NotNull
     public IRect offset(int dx, int dy) {
-        return new IRect(_left + dx, _top + dy, _right + dx, _bottom + dy);
+        return dx == 0 && dy == 0 ? this : new IRect(_left + dx, _top + dy, _right + dx, _bottom + dy);
     }
 
     @NotNull
@@ -88,5 +98,18 @@ public class IRect {
     @NotNull @Contract("-> new")
     public Rect toRect() {
         return new Rect(_left, _top, _right, _bottom);
+    }
+
+    public boolean isEmpty() {
+        return _right == _left || _top == _bottom;
+    }
+
+    public boolean contains(int x, int y) {
+        return _left <= x && x <= _right && _top <= y && y <= _bottom;
+    }
+
+    public boolean contains(@NotNull IPoint vec) {
+        assert vec != null : "IRect::contains expected vec != null";
+        return _left <= vec._x && vec._x <= _right && _top <= vec._y && vec._y <= _bottom;
     }
 }

@@ -34,7 +34,7 @@ public class Point {
 
     @NotNull
     public Point offset(float dx, float dy) {
-        return new Point(_x + dx, _y + dy);
+        return dx == 0 && dy == 0 ? this : new Point(_x + dx, _y + dy);
     }
 
     @NotNull
@@ -50,10 +50,20 @@ public class Point {
 
     @NotNull
     public Point scale(float sx, float sy) {
-        return new Point(_x * sx, _y * sy);
+        return (sx == 1 && sy == 1) || (_x == 0 && _y == 0) ? this : new Point(_x * sx, _y * sy);
+    }
+
+    @NotNull
+    public Point inverse() {
+        return scale(-1, -1);
     }
 
     public boolean isEmpty() {
         return _x <= 0 || _y <= 0;
+    }
+
+    @NotNull @Contract("-> new")
+    public IPoint toIPoint() {
+        return new IPoint((int) _x, (int) _y);
     }
 }
