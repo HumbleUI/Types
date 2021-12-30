@@ -144,4 +144,13 @@ public class Rect {
     public boolean isEmpty() {
         return _right == _left || _top == _bottom;
     }
+
+    public boolean contains(float x, float y) {
+        return _left <= x && x <= _right && _top <= y && y <= _bottom;
+    }
+
+    public boolean contains(@NotNull Point vec) {
+        assert vec != null : "Rect::contains expected vec != null";
+        return _left <= vec._x && vec._x <= _right && _top <= vec._y && vec._y <= _bottom;
+    }
 }
