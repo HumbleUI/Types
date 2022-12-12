@@ -15,7 +15,13 @@ def test():
 
 def main(classifier=''):
   os.chdir(common.basedir)
-  build_utils.javac(build_utils.files(f'java{classifier}/**/*.java'),
+
+  sources = [f for f in build_utils.files(f'java{classifier}/**/*.java') if not f.endswith('module-info.java')]
+  build_utils.javac(sources,
+                    f'target/classes{classifier}',
+                    classpath=common.deps(classifier),
+                    release='8')
+  build_utils.javac([f'java{classifier}/module-info.java'],
                     f'target/classes{classifier}',
                     classpath=common.deps(classifier),
                     modulepath=common.deps(classifier),
