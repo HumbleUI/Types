@@ -16,15 +16,16 @@ def test():
 def main(classifier=''):
   os.chdir(common.basedir)
 
-  sources = [f for f in build_utils.files(f'java{classifier}/**/*.java') if not f.endswith('module-info.java')]
+  sources = [f for f in build_utils.files(f'java{classifier}/**/*.java')]
   build_utils.javac(sources,
                     f'target/classes{classifier}',
                     classpath=common.deps(classifier),
                     release='8')
-  build_utils.javac([f'java{classifier}/module-info.java'],
-                    f'target/classes{classifier}',
+  build_utils.javac([f'java9/module-info.java'],
+                    f'target/classes-java9',
                     classpath=common.deps(classifier),
                     modulepath=common.deps(classifier),
+                    opts = ['--patch-module', f'io.github.humbleui.types=target/classes{classifier}'],
                     release='9')
   if '-clojure' == classifier:
     test()

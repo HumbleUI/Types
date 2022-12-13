@@ -19,18 +19,19 @@ def main(classifier: str = '') -> Tuple[str, str, str]:
   
   jar = build_utils.jar(f"target/types-{common.version}{classifier}.jar",
     (f"target/classes{classifier}", "."),
-    (f"target/maven", "META-INF"))
+    (f"target/maven", "META-INF"),
+    opts = ["--release", "9", "-C", "target/classes-java9", "."])
 
   build_utils.delombok([f"java{classifier}"],
     f"target/delomboked{classifier}/io/github/humbleui/types",
-    modulepath=common.deps(classifier))
+    classpath=common.deps(classifier))
   sources = build_utils.jar(f"target/types-{common.version}{classifier}-sources.jar",
     (f"target/delomboked{classifier}", "."),
     (f"target/maven", "META-INF"))
 
   build_utils.javadoc([f"target/delomboked{classifier}"],
     f"target/apidocs{classifier}",
-    modulepath=common.deps(classifier))
+    classpath=common.deps(classifier))
   javadoc = build_utils.jar(f"target/types-{common.version}{classifier}-javadoc.jar",
     (f"target/apidocs{classifier}", "."),
     (f"target/maven", "META-INF"))
