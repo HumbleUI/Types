@@ -15,9 +15,9 @@ def deps_java():
 @functools.lru_cache(maxsize=1)
 def deps_clojure():
   return deps() + [
-    build_utils.fetch_maven("org.clojure", "clojure", "1.11.0-alpha3"),
+    build_utils.fetch_maven("org.clojure", "clojure", "1.11.0"),
     build_utils.fetch_maven("org.clojure", "core.specs.alpha", "0.2.62"),
-    build_utils.fetch_maven("org.clojure", "spec.alpha", "0.2.194"),
+    build_utils.fetch_maven("org.clojure", "spec.alpha", "0.3.218"),
   ]
 
 def deps(classifier=''):
